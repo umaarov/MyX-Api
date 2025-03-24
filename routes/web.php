@@ -1,10 +1,11 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route as RouteFacade;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
-use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return response()->json([
@@ -33,6 +34,19 @@ Route::prefix('api')->group(function () {
         Route::post('/posts/{post}/like', [LikeController::class, 'togglePostLike']);
         Route::post('/comments/{comment}/like', [LikeController::class, 'toggleCommentLike']);
     });
+});
+
+Route::get('/sitemap', function () {
+    $routes = collect(RouteFacade::getRoutes())->map(function ($route) {
+        return [
+            'uri' => $route->uri(),
+            'method' => $route->methods(),
+//            'name' => $route->getName(),
+//            'middleware' => $route->gatherMiddleware(),
+        ];
+    });
+
+    return response()->json($routes);
 });
 
 Route::fallback(function () {
